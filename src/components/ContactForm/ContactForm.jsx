@@ -1,15 +1,16 @@
+import { useId } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
-import { useId } from "react";
-import { nanoid } from "@reduxjs/toolkit";
-import { addContact } from "../../redux/contactsSlice";
 import styles from "./ContactForm.module.css";
-import { useDispatch } from "react-redux";
+import { addContact } from "../../redux/contactsOps";
+import { selectLoading } from "../../redux/contactsSlice";
 
 export default function ContactForm() {
   const dispatch = useDispatch();
   const nameId = useId();
   const phoneId = useId();
+  const loading = useSelector(selectLoading);
 
   const initialValues = {
     name: "",
@@ -28,7 +29,7 @@ export default function ContactForm() {
   });
 
   function onSubmit({ name, number }, { resetForm }) {
-    dispatch(addContact({ name, number, id: nanoid() }));
+    dispatch(addContact({ name, number }));
     resetForm();
   }
 
@@ -49,7 +50,9 @@ export default function ContactForm() {
         <ErrorMessage name="number">
           {(msg) => <div className={styles.error}>{msg}</div>}
         </ErrorMessage>
-        <button type="submit">Add contact</button>
+        <button type="submit" disabled={loading}>
+          Add contact
+        </button>
       </Form>
     </Formik>
   );
